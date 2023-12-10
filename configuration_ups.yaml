@@ -1,0 +1,55 @@
+rest:
+  - resource: "http://192.168.x.x:5000/status"
+    scan_interval: 15
+    sensor:
+      - name: "Ragtech UPS - Frequência"
+        unique_id: "ragtech_freq"
+        value_template: "{{ value_json.Freq }}"
+        unit_of_measurement: "Hz"
+
+      - name: "Ragtech UPS - Temperatura"
+        unique_id: "ragtech_temp"
+        value_template: "{{ value_json.Temp }}"
+        unit_of_measurement: "°C"
+        device_class: "temperature"
+
+      - name: "Ragtech UPS - Corrente de Saída"
+        unique_id: "ragtech_iout"
+        value_template: "{{ value_json.iOut }}"
+        unit_of_measurement: "A"
+        device_class: "current"
+
+      - name: "Ragtech UPS - Percentual da Bateria"
+        unique_id: "ragtech_pbat"
+        value_template: "{{ value_json.pBat }}"
+        unit_of_measurement: "%"
+        device_class: "battery"
+
+      - name: "Ragtech UPS - Percentual Potência"
+        unique_id: "ragtech_ppot"
+        value_template: "{{ value_json.pPot }}"
+        unit_of_measurement: "%"
+
+      - name: "Ragtech UPS - Tensão da Bateria"
+        unique_id: "ragtech_vbat"
+        value_template: "{{ value_json.vBat }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+
+      - name: "Ragtech UPS - Tensão de Entrada"
+        unique_id: "ragtech_vin"
+        value_template: "{{ value_json.vIn }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+
+      - name: "Ragtech UPS - Tensão de Saída"
+        unique_id: "ragtech_vout"
+        value_template: "{{ value_json.vOut }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+
+      - name: "Ragtech UPS - Potência de Saída"
+        unique_id: "ragtech_wout"
+        value_template: "{{ value_json.wOut }}"
+        unit_of_measurement: "W"
+        device_class: "power"
