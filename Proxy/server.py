@@ -31,10 +31,10 @@ def enviar_e_receber(ip, porta, payload, dados_sensores):
 
 def cutBytes(data, offset):
     bytes_extraidos = [
+        data[offset + 0] ^ 0xa5,
+        data[offset + 1] ^ 0xa5,
         data[offset + 2] ^ 0xa5,
-        data[offset + 3] ^ 0xa5,
-        data[offset] ^ 0xa5,
-        data[offset + 1] ^ 0xa5
+        data[offset + 3] ^ 0xa5
     ]
     return bytes(bytes_extraidos)
 
@@ -58,16 +58,16 @@ class DadosSensores:
 
     def update(self, resposta):
         try:
-            self.vIn =  getFloat(resposta, 0x12)
-            self.vOut = getFloat(resposta, 0x16)
-            self.iOut = getFloat(resposta, 0x1A)
+            self.vIn =  getFloat(resposta, 0x10)
+            self.vOut = getFloat(resposta, 0x14)
+            self.iOut = getFloat(resposta, 0x18)
             self.wOut = round(self.vOut*self.iOut,1)
 
-            self.pPot = getFloat(resposta, 0x1E)
-            self.Freq = getFloat(resposta, 0x22)
-            self.vBat = getFloat(resposta, 0x26)
-            self.pBat = getFloat(resposta, 0x2E)
-            self.Temp = getFloat(resposta, 0x2A)
+            self.pPot = min(100, getFloat(resposta, 0x1C)) # float arredonda para 100,2%
+            self.Freq = getFloat(resposta, 0x20)
+            self.vBat = getFloat(resposta, 0x24)
+            self.pBat = min(100, getFloat(resposta, 0x2C)) # float arredonda para 100,2%
+            self.Temp = getFloat(resposta, 0x28)
             self.ultima_atualizacao = datetime.now()
             self.is_success = True
 
