@@ -1,0 +1,63 @@
+
+mqtt:
+    sensor:
+      - name: "Frequência"
+        unique_id: "ragtech_freq"
+        state_topic: "home/ups/ragtech_ups/Frequency"
+        unit_of_measurement: "Hz"
+        value_template: "{{ value_json.value }}"
+
+      - name: "Temperatura"
+        unique_id: "ragtech_temp"
+        state_topic: "home/ups/ragtech_ups/Temperature"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "°C"
+        device_class: "temperature"
+      
+      - name: "Corrente de Saída"
+        unique_id: "ragtech_iout"
+        state_topic: "home/ups/ragtech_ups/Current_Out"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "A"
+        device_class: "current"
+      
+      - name: "Percentual da Bateria"
+        unique_id: "ragtech_pbat"
+        state_topic: "home/ups/ragtech_ups/Battery_State"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "%"
+        device_class: "battery"
+      
+      - name: "Percentual Potência"
+        unique_id: "ragtech_ppot"
+        state_topic: "home/ups/ragtech_ups/Power_Out_Percent"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "%"
+      
+      - name: "Tensão da Bateria"
+        unique_id: "ragtech_vbat"
+        state_topic: "home/ups/ragtech_ups/Battery_Voltage"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+      
+      - name: "Tensão de Entrada"
+        unique_id: "ragtech_vin"
+        state_topic: "home/ups/ragtech_ups/Voltage_In"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+      
+      - name: "Tensão de Saída"
+        unique_id: "ragtech_vout"
+        state_topic: "home/ups/ragtech_ups/Voltage_Out"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "V"
+        device_class: "voltage"
+      
+      - name: "Potência de Saída"
+        unique_id: "ragtech_wout"
+        state_topic: "home/ups/ragtech_ups/Power_Out"
+        value_template: "{{ value_json.value }}"
+        unit_of_measurement: "W"
+        device_class: "power"
