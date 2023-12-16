@@ -13,15 +13,18 @@ def read_config():
     return config
 
 def build_payload(buffer):
+    iOut = linear(buffer[0x0D], 0.1152, 0)
+    vOut = linear(buffer[0x1E], 0.555, 0)
     payload = {
         "potP": linear(buffer[0x0E], 1, 0),
         "temp": linear(buffer[0x0F], 1, 0),
         "batP": linear(buffer[0x08], 0.392, 0),
         "freq": linear(buffer[0x18], -0.1152, 65),
-        "iOut": linear(buffer[0x0D], 0.1152, 0),
+        "iOut": iOut,
         "vBAT": linear(buffer[0x0B], 0.0671, 0),
         "vIN":  linear(buffer[0x0C], 1.06, 0),
-        "vOUT": linear(buffer[0x1E], 0.555, 0),
+        "vOUT": vOut,
+        "wOUT": round(iOut*vOut,1)
     }
 
     return payload
@@ -84,7 +87,7 @@ while True:
 
     serial_port.write(cmd_get_data)
     print("\nRequesting Data... ", end=" ")
-    while serial_port.in_waiting < 30:
+    while serial_port.in_waiting < 31:
         time.sleep(0.1)
         print(serial_port.in_waiting, end=" ")
 
