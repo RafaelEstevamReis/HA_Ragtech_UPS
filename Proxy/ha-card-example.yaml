@@ -1,0 +1,24 @@
+type: entities
+entities:
+  - entity: sensor.percentual_potencia
+    name: '% Carga'
+    secondary_info: last-updated
+    icon: mdi:power-plug
+  - entity: sensor.potencia_de_saida
+    name: Carga
+  - entity: sensor.tensao_de_entrada
+    name: Tensão Entrada
+  - entity: sensor.tensao_de_saida
+    name: Tensão Saída
+  - entity: sensor.corrente_de_saida
+    name: Corrente de Saída
+    secondary_info: none
+  - entity: sensor.tensao_da_bateria
+    name: Tensão Bateria
+  - entity: sensor.percentual_da_bateria
+    name: '% Bateira'
+  - entity: sensor.temperatura
+    name: Temperatura
+  - entity: sensor.ragtech_ups_frequencia_2
+    name: Frequência
+title: Ragtech UPS
