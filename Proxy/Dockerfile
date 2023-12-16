@@ -4,13 +4,14 @@ FROM python:3.8-slim-buster
 # Set the working directory in the container
 WORKDIR /app
 
-RUN pip install flask
-
 # Copy the Python script files into the container
 COPY . /app
 
-# Expose the port the app runs on
-EXPOSE 5000
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Grant access to the serial port
+RUN usermod -a -G dialout root
 
 # Run the application
 CMD ["python", "server.py"]

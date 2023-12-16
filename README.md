@@ -2,14 +2,18 @@
 
 Integração para nobreak Ragtech para HomeAssistant
 
-## Arquitetura
+
+Agradecimentos:
+* Ao Christian: pela nova arquitetura: https://github.com/clyra/nhs2mqtt
+
+## Arquitetura (v0)
 
 * O Nobreak (UPS) conecta via USB ao computador (ou via VM)
 * O Software original do fabricante deve estar instalado na máquina, VM ou container
 * Esta integração consulta os dados do equipamento e disponibiliza via API Rest na porta 5000
 * O HomeAssistant através da integração RESTful acessa os dados
 
-## Como configurar
+## Como configurar (v0)
 
 1. Tenha o software do fabricante operacional e funcionando (chamarei de Server)
 2. Obtenha o IP do computador/VM que o Server está operando

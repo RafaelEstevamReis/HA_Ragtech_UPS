@@ -1,0 +1,10 @@
+serial:
+   port: "/dev/ttyACM0"
+   debug: False
+
+mqtt:
+   host: "192.168.0.10"
+   port: 1883 
+   topic: "home/UPS"
+   #user: "foo"      #(optional)
+   #password: "bar"  #(optional)
