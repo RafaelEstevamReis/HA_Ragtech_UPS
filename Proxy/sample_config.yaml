@@ -5,6 +5,6 @@ serial:
 mqtt:
    host: "192.168.0.10"
    port: 1883 
-   topic: "home/UPS"
+   device_id: "ragtech_ups"
    #user: "foo"      #(optional)
    #password: "bar"  #(optional)

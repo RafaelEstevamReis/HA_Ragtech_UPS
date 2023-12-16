@@ -16,15 +16,15 @@ def build_payload(buffer):
     iOut = linear(buffer[0x0D], 0.1152, 0)
     vOut = linear(buffer[0x1E], 0.555, 0)
     payload = {
-        "potP": linear(buffer[0x0E], 1, 0),
-        "temp": linear(buffer[0x0F], 1, 0),
-        "batP": linear(buffer[0x08], 0.392, 0),
-        "freq": linear(buffer[0x18], -0.1152, 65),
-        "iOut": iOut,
-        "vBAT": linear(buffer[0x0B], 0.0671, 0),
-        "vIN":  linear(buffer[0x0C], 1.06, 0),
-        "vOUT": vOut,
-        "wOUT": round(iOut*vOut,1)
+        "Power_Out_Percent": {"value": linear(buffer[0x0E], 1, 0), "unit": "%"},
+        "Current_Out": {"value": iOut, "unit": "A"},
+        "Voltage_Out": {"value": vOut, "unit": "V"},
+        "Voltage_In": {"value": linear(buffer[0x0C], 1.06, 0), "unit": "V"},
+        "Power_Out": {"value": round(iOut*vOut, 1), "unit": "W"},
+        "Temperature": {"value": linear(buffer[0x0F], 1, 0), "unit": "C"},
+        "Battery_State": {"value": linear(buffer[0x08], 0.392, 0), "unit": "%"},
+        "Battery_Voltage": {"value": linear(buffer[0x0B], 0.0671, 0), "unit": "V"},
+        "Frequency": {"value": linear(buffer[0x18], -0.1152, 65), "unit": "Hz"},
     }
 
     return payload
@@ -39,7 +39,6 @@ def send_and_ignore(serial_port, command, wait_time=0.1):
             return
         print("No response ...")
 
-
 # Carrega as configurações do arquivo YAML
 config = read_config()
 
@@ -49,9 +48,9 @@ if serial_port.isOpen():
     print(serial_port.name + " is open…")
 
 # Configuração MQTT
+device_id = config["mqtt"]["device_id"]
 mqtt_address = config["mqtt"]["host"]
 mqtt_port = config["mqtt"]["port"]
-mqtt_topic = config["mqtt"]["topic"]
 mqtt_username = config["mqtt"].get("user", None)
 mqtt_password = config["mqtt"].get("password", None)
 
@@ -87,17 +86,29 @@ while True:
 
     serial_port.write(cmd_get_data)
     print("\nRequesting Data... ", end=" ")
+
+    wait = 100
     while serial_port.in_waiting < 31:
         time.sleep(0.1)
         print(serial_port.in_waiting, end=" ")
+        wait-=1
+        if(wait <= 0):
+            break
+    if(wait <= 0):
+        print("STOPPED")
+        continue
 
     print()
     time.sleep(0.1)
     buffer = serial_port.read(serial_port.in_waiting)
 
     # Monta o payload
-    payload = json.dumps(build_payload(buffer))
+    payload = build_payload(buffer)
 
-    # Publica os dados no tópico MQTT
-    mqtt_client.publish(mqtt_topic, payload)
-    print(payload)
+    device_name = "Nobreak Ragtech"
+    for key, value in payload.items():
+        topic = f"home/ups/{device_id}/{key}"
+        mqtt_client.publish(topic, json.dumps(value))
+
+    print(json.dumps(payload))
+
