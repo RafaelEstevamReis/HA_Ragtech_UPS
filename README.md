@@ -6,24 +6,18 @@ Integração para nobreak Ragtech para HomeAssistant
 Agradecimentos:
 * Ao Christian: pela nova arquitetura: https://github.com/clyra/nhs2mqtt
 
-## Arquitetura (v0)
+## Arquitetura
 
 * O Nobreak (UPS) conecta via USB ao computador (ou via VM)
-* O Software original do fabricante deve estar instalado na máquina, VM ou container
-* Esta integração consulta os dados do equipamento e disponibiliza via API Rest na porta 5000
-* O HomeAssistant através da integração RESTful acessa os dados
+* Os dados são lidos da serial e enviados ao HomeAssistant via mqtt
 
 ## Como configurar (v0)
 
-1. Tenha o software do fabricante operacional e funcionando (chamarei de Server)
-2. Obtenha o IP do computador/VM que o Server está operando
-3. Configure o IP do Server no arquivo Proxy/server.py
-4. Suba o container (pasta Proxy), este container aceitará conexões na porta 5000
-5. Configure o Home Assistant para utilizar a integração RESTful de acordo com arquivo `configuration_ups.yaml`
-
-Locais com IPs para mudar ou anotar:
-* `configuration_ups.yaml`: IP do Proxy
-* `Proxy/server.py`: IP do Servidor
+* O Nobreak (UPS) conecta via USB ao computador (ou via VM)
+* Anote a porta (COMx ou /dev/ttyAMCx)
+* Crie o arquivo de configuração com base no sample
+* Atualize o arquivo com a porta serial e os dados do mqtt
+* Suba o container mapeando a porta serial, ou execute o server.py
 
 # Contributing (EN)
 
