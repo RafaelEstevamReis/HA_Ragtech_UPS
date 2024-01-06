@@ -1,6 +1,7 @@
 serial:
    port: "/dev/ttyACM0"
    debug: False
+   interval: 5
 
 mqtt:
    host: "192.168.0.10"

@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN usermod -a -G dialout root
 
 # Run the application
-CMD ["python", "server.py"]
+CMD ["python", "-u", "server.py"]

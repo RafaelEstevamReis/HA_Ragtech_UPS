@@ -17,14 +17,20 @@ mqtt_address = config["mqtt"]["host"]
 mqtt_port = config["mqtt"]["port"]
 mqtt_username = config["mqtt"].get("user", None)
 mqtt_password = config["mqtt"].get("password", None)
+cfg_mqtt_interval = config["serial"].get("interval", 5)
 
 # Configuração Serial
 cfg_serial_port = config["serial"]["port"]
+cfg_serial_interval = config["serial"].get("interval", 5)
 
 # payloads
 cmd_req1 = bytes.fromhex("FF FE 00 8E 01 8F")
 cmd_req2 = bytes.fromhex("AA 04 00 80 1E 9E")
 cmd_get_data = bytes.fromhex("AA 04 00 80 1E 9E")
+
+power_current_kwh_out = 0.0
+power_current_kwh_in = 0.0
+power_last_update = time.time()
 
 def logData(text, end):
     current_datetime = datetime.datetime.now()
@@ -34,18 +40,44 @@ def logData(text, end):
     else:
         print(f"[{formatted_datetime}] {text}")
 
-def linear(val, a, b):
-    return round(b + val * a, 1)
+def linear(val, a, b, decimals = 1):
+    return round(b + val * a, decimals)
+
+def processPower(wOut, wIn):
+    global power_last_update
+    global power_current_kwh_out
+    global power_current_kwh_in
+
+    curr = time.time()
+    diff = curr - power_last_update # in seconds
+    power_last_update = curr
+
+    slice = (wOut / 1000) * (diff / 3600)
+    power_current_kwh_out += slice
+    
+    slice = (wIn / 1000) * (diff / 3600)
+    power_current_kwh_in += slice
 
 def build_payload(buffer):
-    iOut = linear(buffer[0x0D], 0.1152, 0)
-    vOut = linear(buffer[0x1E], 0.555, 0)
+    iOut = linear(buffer[0x0D], 0.1152, 0, 2)
+
+    vOut = linear(buffer[0x1E], 0.555, 0, 2)
+    wOut = iOut*vOut
+
+    vIn = linear(buffer[0x0C], 1.06, 0, 2)
+    wIn = iOut*vIn # não tem "iIn"
+
+    processPower(wOut, wIn)
+
     payload = {
         "Power_Out_Percent": {"value": linear(buffer[0x0E], 1, 0), "unit": "%"},
         "Current_Out": {"value": iOut, "unit": "A"},
-        "Voltage_Out": {"value": vOut, "unit": "V"},
-        "Voltage_In": {"value": linear(buffer[0x0C], 1.06, 0), "unit": "V"},
-        "Power_Out": {"value": round(iOut*vOut, 1), "unit": "W"},
+        "Voltage_Out": {"value": round(vOut, 1), "unit": "V"},
+        "Voltage_In": {"value": round(vIn, 1), "unit": "V"},
+        "Power_Out": {"value": round(wOut, 1), "unit": "W"},
+        "Power_In": {"value": round(wIn, 1), "unit": "W"},
+        "Energy_Out": {"value": round(power_current_kwh_out, 2), "unit": "kWh"},
+        "Energy_In": {"value": round(power_current_kwh_in, 2), "unit": "kWh"},
         "Temperature": {"value": linear(buffer[0x0F], 1, 0), "unit": "C"},
         "Battery_State": {"value": linear(buffer[0x08], 0.392, 0), "unit": "%"},
         "Battery_Voltage": {"value": linear(buffer[0x0B], 0.0671, 0), "unit": "V"},
@@ -66,9 +98,14 @@ def send_and_ignore(serial_port, command, wait_time=0.1):
 
 def mainLoop():
     # Configuração da porta serial
+    logData(f"serial open: {cfg_serial_port}", False)
     serial_port = serial.Serial(cfg_serial_port)
     if serial_port.isOpen():
         logData(serial_port.name + " is open…", False)
+    else:
+        logData(f"serial fail: {ret}", False)
+        time.sleep(10)
+        return
 
     # Configuração do cliente MQTT
     mqtt_client = mqtt.Client("rups2mqtt")
@@ -79,7 +116,11 @@ def mainLoop():
         logData("Using Username+Password", False)
 
     logData("Connecting to " + mqtt_address + ":" + str(mqtt_port), False)
-    mqtt_client.connect(mqtt_address, mqtt_port, 15)
+    ret = mqtt_client.connect(mqtt_address, mqtt_port, 15)
+    if ret != 0:
+        logData(f"mqtt fail: {ret}", False)
+        time.sleep(10)
+        return
 
     # Função para enviar e ignorar resposta
     logData(f"Starting Serial", False)
@@ -90,7 +131,7 @@ def mainLoop():
     logData(f"Sent CMD2", False)
 
     while True:
-        time.sleep(4.9)
+        time.sleep(cfg_serial_interval)
 
         # Limpa
         while serial_port.in_waiting > 0:
@@ -126,6 +167,7 @@ def mainLoop():
             ret = mqtt_client.publish(topic, json.dumps(value))
             if ret[0] != 0:
                 logData(f"mqtt err: {ret}", False)
+                return
         
         logData("MQTT Sent", False)
 
