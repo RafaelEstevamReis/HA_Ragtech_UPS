@@ -19,6 +19,9 @@ Agradecimentos:
 * Atualize o arquivo com a porta serial e os dados do mqtt
 * Suba o container mapeando a porta serial, ou execute o server.py
 
+Pode ser necessário trocar as permissões da porta serial:
+`sudo chmod 666 /dev/ttyACM0`
+
 # Contributing (EN)
 
 We welcome contributions to the project! However, it's important to note that none of Ragtech's intellectual property (IP), including their proprietary code, algorithms, or documentation, should be used or included in any contributions.
