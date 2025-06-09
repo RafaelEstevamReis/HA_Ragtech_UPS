@@ -1,7 +1,15 @@
+Use this repo instead: https://github.com/kriansa/ragtech-supervise
+
+Way simpler to implement using official sotware
+
+Supports Json output at: http://[ip]:4470/mon/1.1/device/{deviceId}
+
+
+=================================
+
 # HA_Ragtech_UPS
 
 Integração para nobreak Ragtech para HomeAssistant
-
 
 Agradecimentos:
 * Ao Christian: pela nova arquitetura: https://github.com/clyra/nhs2mqtt
